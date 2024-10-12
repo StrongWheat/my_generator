@@ -5,13 +5,12 @@ import ${import};
 #end
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-import com.ruoyi.common.core.annotation.Excel;
+import ${packageName}.annotation.Excel;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-#if($table.crud || $table.sub)
-import com.ruoyi.common.core.web.domain.BaseEntity;
-#elseif($table.tree)
-import com.ruoyi.common.core.web.domain.TreeEntity;
-#end
+
 
 /**
  * ${functionName}对象 ${tableName}
@@ -25,7 +24,7 @@ import com.ruoyi.common.core.web.domain.TreeEntity;
 #set($Entity="TreeEntity")
 #end
 @Data
-public class ${ClassName} extends ${Entity}
+public class ${ClassName}Dto
 {
     private static final long serialVersionUID = 1L;
 
@@ -39,15 +38,16 @@ public class ${ClassName} extends ${Entity}
 #else
 #set($comment=$column.columnComment)
 #end
-#if($parentheseIndex != -1)
-    @Excel(name = "${comment}", readConverterExp = "$column.readConverterExp()")
-#elseif($column.javaType == 'Date')
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    @Excel(name = "${comment}", width = 30, dateFormat = "yyyy-MM-dd")
+#if($column.javaType == 'Date')
+    @NotNull(message = "${comment}不能为空")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+#elseif($column.javaType == 'String')
+    @NotEmpty(message = "${comment}不能为空")
 #else
-    @Excel(name = "${comment}")
+    @NotNull(message = "${comment}不能为空")
 #end
 #end
+    @Schema(description = "${comment}")
     private $column.javaType $column.javaField;
 
 #end
